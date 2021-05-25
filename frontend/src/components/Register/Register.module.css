@@ -1,0 +1,15 @@
+/* Styles for the Register Component */
+
+.getStarted {
+    margin: auto;
+}
+
+.title {
+    font-family: fantasy;
+    color: gray;
+    text-align: center;
+}
+
+.brand {
+    color: magenta;
+}

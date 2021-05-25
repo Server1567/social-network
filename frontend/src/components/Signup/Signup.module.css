@@ -1,0 +1,16 @@
+/* Signup's Styles */
+.title {
+    text-align: center;
+    font-family: helvetica;
+    font-weight: bold;
+}
+
+
+.btn {
+    width: 100%;
+}
+
+.form {
+    width: 100%;
+    padding: 0 250px;
+}

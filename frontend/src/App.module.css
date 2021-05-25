@@ -1,0 +1,17 @@
+/* Styles for App Master */
+.getStarted {
+    margin: auto;
+}
+
+.title {
+    font-family: fantasy;
+    color: gray;
+}
+
+.brand {
+    color: magenta;
+}
+
+.register {
+    width: 100%;
+}
