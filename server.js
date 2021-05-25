@@ -29,10 +29,34 @@ app.post('/signup', (req, res, next) => {
                 return res.status(200).json(user)
             })
         } else {
-            // To read file, modify it and save it.
+            // To read file.
+            try {
+                const data = fs.readFileSync('db.json', 'utf8')
+                const dataJSON = JSON.parse(data)
+                if (dataJSON instanceof Array) {
+                    // Verificar si el contenido del .json es un Array, osea (tiene múltiples registros)
+                    // Aún no PROGRAMAR
+                } else {
+                    // SI el archivo ya tiene un registro, el archivo estará entre llaves
+                    // como un único objeto, el OBJETIVO es hacer una Array y poner ese JSON
+                    // dentro del Array, y añadirle tambien el nuevo registro.
+                    // Para que se grabe en el archivo .json un Array que contiene dos registros (JSON)
+                    let array = []
+                    array.push(dataJSON, jsonUser)
+                    const arrayDB = JSON.stringify(array)
+
+                    fs.writeFile('db.json', arrayDB, (err) => {
+                        if (err) throw err;
+                        return res.status(200).json({user})
+                    })
+                }
+            } catch (e) {
+                console.error(e)
+                return res.status(404).json({ message: 'Error 404 Not Found' })
+            }
         }
     } catch (e) {
-        return res.status(404).json({message: 'Error 404 Not Found', error: e})
+        return res.status(404).json({message: 'Error 404 Not Found URL', error: e})
     }
 })
 
