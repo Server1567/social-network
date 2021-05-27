@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react'
 import styles from './Signup.module.css'
 import axios from 'axios'
+import PubSub from 'pubsub-js'
 
 const Signup = () => {
     const [ signUp, setSignUp ] = useState(false)
@@ -122,56 +123,54 @@ const Signup = () => {
     }
 
     if (signUp) {
-        return (
-            <h1>Welcome {userJSON.data.firstName}!</h1>
-        )
+        PubSub.publish('user', userJSON)
     }
 
     return (
         <div className={`container`}>
-        <h2 className={styles.title}>Get started with us!</h2>
-        <form className={`row ${styles.form}`} style={{margin: '0'}} onSubmit={signup}>
-            <div className="row g-3">
-                <div className="col-md-6">
-                    <input type="text" className="form-control" placeholder="First name" ref={firstName} aria-describedby="firstNameHelpBlock" required />
-                    <div id='firstNameHelpBlock' className="form-text">
-                        For example: <em> John</em>
+            <h2 className={styles.title}>Get started with us!</h2>
+            <form className={`row ${styles.form}`} style={{margin: '0'}} onSubmit={signup}>
+                <div className="row g-3">
+                    <div className="col-md-6">
+                        <input type="text" className="form-control" placeholder="First name" ref={firstName} aria-describedby="firstNameHelpBlock" required />
+                        <div id='firstNameHelpBlock' className="form-text">
+                            For example: <em> John</em>
+                        </div>
                     </div>
-                </div>
-                <div className="col-md-6">
-                    <input type="text" className="form-control" placeholder="Last name" ref={lastName} aria-describedby="lastNameHelpBlock" required />
-                    <div id='lastNameHelpBlock' className="form-text">
-                        For example: <em> Doe</em>
+                    <div className="col-md-6">
+                        <input type="text" className="form-control" placeholder="Last name" ref={lastName} aria-describedby="lastNameHelpBlock" required />
+                        <div id='lastNameHelpBlock' className="form-text">
+                            For example: <em> Doe</em>
+                        </div>
                     </div>
-                </div>
-                <div className="col-md-6">
-                    <input type="username" className="form-control" placeholder="Username" ref={userName} aria-describedby="userNameHelpBlock" required />
-                    <div id='userNameHelpBlock' className="form-text">
-                        For example: <em> Username123</em>
+                    <div className="col-md-6">
+                        <input type="username" className="form-control" placeholder="Username" ref={userName} aria-describedby="userNameHelpBlock" required />
+                        <div id='userNameHelpBlock' className="form-text">
+                            For example: <em> Username123</em>
+                        </div>
                     </div>
-                </div>
-                <div className="col-md-6">
-                    <input type="email" className="form-control" placeholder="Email" ref={email} aria-describedby="emailHelpBlock"  required />
-                    <div id='emailHelpBlock' className="form-text">
-                        For example: <em> username@company.com</em>
+                    <div className="col-md-6">
+                        <input type="email" className="form-control" placeholder="Email" ref={email} aria-describedby="emailHelpBlock"  required />
+                        <div id='emailHelpBlock' className="form-text">
+                            For example: <em> username@company.com</em>
+                        </div>
                     </div>
-                </div>
-                <div className="col-md-6">
-                    <input type="password" className={passStyle.classes} style={{border: passStyle.border}} placeholder="Password" ref={password} onChange={pass} aria-describedby="passwordHelpBlock" required />
-                    <div id='passwordHelpBlock' className={passStyle.classMsg}>
-                        Use 8 or more characters with a combination of letters, numbers, and symbols.
+                    <div className="col-md-6">
+                        <input type="password" className={passStyle.classes} style={{border: passStyle.border}} placeholder="Password" ref={password} onChange={pass} aria-describedby="passwordHelpBlock" required />
+                        <div id='passwordHelpBlock' className={passStyle.classMsg}>
+                            Use 8 or more characters with a combination of letters, numbers, and symbols.
+                        </div>
                     </div>
-                </div>
-                <div className="col-md-6">
-                    <input type="password" className={rePassStyle.classes} style={{border: rePassStyle.border}} placeholder="Repeat password" ref={repeatPassword} onChange={repass} aria-describedby="rePasswordHelpBlock" required />
-                    <div id='rePasswordHelpBlock' className={rePassStyle.classMsg}>
-                        Make sure you have entered the same password in the field above.
+                    <div className="col-md-6">
+                        <input type="password" className={rePassStyle.classes} style={{border: rePassStyle.border}} placeholder="Repeat password" ref={repeatPassword} onChange={repass} aria-describedby="rePasswordHelpBlock" required />
+                        <div id='rePasswordHelpBlock' className={rePassStyle.classMsg}>
+                            Make sure you have entered the same password in the field above.
+                        </div>
                     </div>
+                    <input type="submit" value="Sign Up" className="btn btn-success" />
                 </div>
-                <input type="submit" value="Sign Up" className="btn btn-success" />
-            </div>
-        </form>
-    </div>
+            </form>
+        </div>
     )
 }
 
