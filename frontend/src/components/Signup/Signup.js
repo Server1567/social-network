@@ -123,7 +123,7 @@ const Signup = () => {
     }
 
     if (signUp) {
-        PubSub.publish('user', userJSON)
+        PubSub.publish('user', userJSON.data)
     }
 
     return (

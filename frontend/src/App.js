@@ -15,8 +15,12 @@ const App = () => {
         PubSub.subscribe('user', (err, data) => {
             setUser(data)
         })
+        PubSub.subscribe('logged', (err, data) => {
+            setUser(data)
+        })
         return () => {
             PubSub.unsubscribe('user')
+            PubSub.unsubscribe('logged')
         }
     }, [])
 
@@ -50,7 +54,6 @@ const App = () => {
             <Dashboard user={user} />
         )
     }
-
 }
 
 export default App
