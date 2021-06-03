@@ -1,28 +1,22 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import styles from './App.module.css'
 import Login from './components/Login'
 import Register from './components/Register'
 import Dashboard from './components/Dashboard'
-import PubSub from 'pubsub-js'
+import { StoreContext } from './StoreContext'
 
 const App = () => {
     const [ user, setUser ] = useState({})
     const [ register, setRegister ] = useState(false)
     const signup = () => setRegister(true)
 
+    const context = useContext(StoreContext)
+
     useEffect(() => {
-        PubSub.subscribe('user', (err, data) => {
-            setUser(data)
-        })
-        PubSub.subscribe('logged', (err, data) => {
-            setUser(data)
-        })
-        return () => {
-            PubSub.unsubscribe('user')
-            PubSub.unsubscribe('logged')
-        }
-    }, [])
+        setUser(context.user)
+        // eslint-disable-next-line
+    }, [context.user])
 
     if (Object.entries(user).length === 0) {
         if (!register) {
@@ -45,7 +39,6 @@ const App = () => {
                 </div>
             )
         }
-
         return (
             <Register />
         )

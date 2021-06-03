@@ -1,28 +1,32 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useContext } from 'react'
+import { useDebouncedCallback } from 'use-debounce'
 import styles from './Login.module.css'
 import axios from 'axios'
-import PubSub from 'pubsub-js'
+import { StoreContext } from './../../StoreContext'
 
 const Login = () => {
     const [ errLogin, setErrLogin ] = useState({ display: 'none' })
-    let user = useRef()
+    const debounced = useDebouncedCallback(() => setErrLogin({ display: 'none' }), 3000)
+    let userName = useRef()
     let pass = useRef()
+
+    const { setUser } = useContext(StoreContext)
 
     const login = (e) => {
         e.preventDefault()
         axios.post('/login', {
-            user: user.current.value,
+            userName: userName.current.value,
             password: pass.current.value
         })
             .then(res => {
                 if (res.data.logged) {
-                    PubSub.publish('logged', res.data.user)
+                    setUser(res.data.user)
                 } else {
                     setErrLogin({ display: 'block' })
-                    setTimeout(() => setErrLogin({ display: 'none' }), 3000)
+                    debounced()
                 }
             })
-            .catch(e => console.error("There was an error", e))
+            .catch(e => console.error("There was an error ", e))
     }
 
     return (
@@ -35,7 +39,7 @@ const Login = () => {
                         <em className="text-danger">Username and password incorrect</em>
                     </span>
                 </center>
-                <input className="form-control" type="text" placeholder="User" ref={user} required /><br/>
+                <input className="form-control" type="text" placeholder="User" ref={userName} required /><br/>
                 <input className="form-control" type="password" placeholder="Password" ref={pass} required /><br/>
                 <input className={`btn btn-primary ${styles.btn}`} type="submit" value="Log In" />
             </form>

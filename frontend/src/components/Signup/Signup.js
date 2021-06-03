@@ -1,29 +1,15 @@
-import React, { useState, useRef } from 'react'
+import React, { useReducer, useRef, useContext } from 'react'
 import styles from './Signup.module.css'
+import { StoreContext } from './../../StoreContext'
+import { initialState, reducer } from './reducer'
 import axios from 'axios'
-import PubSub from 'pubsub-js'
 
 const Signup = () => {
-    const [ signUp, setSignUp ] = useState(false)
-    const [ userJSON, setUserJSON ] = useState({})
-    const [ passCorrect, setPassCorrect ] = useState(false)
-    const [ passStyle, setPassStyle ] = useState({
-        classes: 'form-control',
-        classMsg: 'form-text',
-        border: '1px solid #ced4da'
-    })
-    const [ rePassStyle, setRePassStyle ] = useState({
-        classes: 'form-control',
-        classMsg: 'form-text',
-        border: '1px solid #ced4da'
-    })
+    const [ state, dispatch ] = useReducer(reducer, initialState)
+    const { setUser } = useContext(StoreContext)
     // Refs from Inputs
-    const firstName = useRef()
-    const lastName = useRef()
-    const userName = useRef()
-    const email = useRef()
-    const password = useRef()
-    const repeatPassword = useRef()
+    const [ firstName, lastName, userName, email, password, repeatPassword ] =
+    [ useRef(), useRef(), useRef(), useRef(), useRef(), useRef() ]
 
     const signup = (e) => {
         e.preventDefault()
@@ -35,27 +21,18 @@ const Signup = () => {
             password: password.current.value
         }
 
-        if (passCorrect) {
+        if (state.passCorrect) {
             if (password.current.value === repeatPassword.current.value) {
                 axios.post('/signup', user)
-                .then(res => {
-                    setUserJSON(res)
-                    setSignUp(true)
-                })
-                .catch(e => console.error("There was an error", e))
+                    .then(res => {
+                        dispatch({ type: 'SET_USERJSON', payload: res })
+                    })
+                    .catch(e => console.error("There was an error", e))
             } else {
-                setRePassStyle({
-                    classes: 'form-control text-danger',
-                    classMsg: 'form-text text-danger',
-                    border: '1px solid red'
-                })
+                dispatch({ type: 'SET_RE_PASS_STYLE_DANGER' })
             }
         } else {
-            setPassStyle({
-                classes: 'form-control text-danger',
-                classMsg: 'form-text text-danger',
-                border: '1px solid red'
-            })
+            dispatch({ type: 'SET_PASS_STYLE_DANGER' })
         }
     }
 
@@ -64,67 +41,30 @@ const Signup = () => {
         if (passField.length >= 8) {
             // eslint-disable-next-line
             const regex = /(?=(.*[0-9]))(?=.*[\!@#$%^&*()\\[\]{}\-_+=~`|:;"'<>,./?])(?=.*[a-z])(?=(.*[A-Z]))(?=(.*)).{8,}/
-            if (regex.test(passField)) {
-                setPassCorrect(true)
-                setPassStyle({
-                    classes: 'form-control text-success',
-                    classMsg: 'form-text text-success',
-                    border: '1px solid #ced4da'
-                })
-            } else {
-                setPassCorrect(false)
-                setPassStyle({
-                    classes: 'form-control text-danger',
-                    classMsg: 'form-text text-danger',
-                    border: '1px solid #ced4da'
-                })
-            }
+            // Validate that the password meets the requirements
+            if (regex.test(passField)) { dispatch({ type: 'SET_PASS_STYLE_CORRECT' }) }
+            else { dispatch({ type: 'SET_PASS_STYLE_INCORRECT' }) }
         }
         else if (passField.length >= 1 && passField.length < 8) {
-            setPassCorrect(false)
-            setPassStyle({
-                classes: 'form-control text-danger',
-                classMsg: 'form-text text-danger',
-                border: '1px solid #ced4da'
-            })
+            dispatch({ type: 'SET_PASS_STYLE_INCORRECT' })
         } else {
-            setPassCorrect(false)
-            setPassStyle({
-                classes: 'form-control',
-                classMsg: 'form-text',
-                border: '1px solid #ced4da'
-            })
+            dispatch({ type: 'SET_PASS_INCORRECT' })
+            dispatch({ type: 'SET_PASS_STYLE' })
         }
     }
 
     const repass = (e) => {
         let rePassField = e.target.value
         if (password.current.value === repeatPassword.current.value) {
-            if (rePassField.length === 0) {
-                setRePassStyle({
-                    classes: 'form-control',
-                    classMsg: 'form-text',
-                    border: '1px solid #ced4da'
-                })
-            } else {
-                setRePassStyle({
-                    classes: 'form-control text-success',
-                    classMsg: 'form-text text-success',
-                    border: '1px solid #ced4da'
-                })
-            }
+            // Validate that the password is the same as the one in the previous field
+            if (rePassField.length === 0) { dispatch({ type: 'SET_RE_PASS_STYLE' }) }
+            else { dispatch({ type: 'SET_RE_PASS_STYLE_CORRECT' }) }
         } else {
-            setRePassStyle({
-                classes: 'form-control text-danger',
-                classMsg: 'form-text text-danger',
-                border: '1px solid #ced4da'
-            })
+            dispatch({ type: 'SET_RE_PASS_STYLE_INCORRECT' })
         }
     }
 
-    if (signUp) {
-        PubSub.publish('user', userJSON.data)
-    }
+    if (state.signUp) { setUser(state.userJSON.data) }
 
     return (
         <div className={`container`}>
@@ -144,7 +84,7 @@ const Signup = () => {
                         </div>
                     </div>
                     <div className="col-md-6">
-                        <input type="username" className="form-control" placeholder="Username" ref={userName} aria-describedby="userNameHelpBlock" required />
+                        <input type="text" className="form-control" placeholder="Username" ref={userName} aria-describedby="userNameHelpBlock" required />
                         <div id='userNameHelpBlock' className="form-text">
                             For example: <em> Username123</em>
                         </div>
@@ -156,14 +96,14 @@ const Signup = () => {
                         </div>
                     </div>
                     <div className="col-md-6">
-                        <input type="password" className={passStyle.classes} style={{border: passStyle.border}} placeholder="Password" ref={password} onChange={pass} aria-describedby="passwordHelpBlock" required />
-                        <div id='passwordHelpBlock' className={passStyle.classMsg}>
+                        <input type="password" className={state.passStyleClasses} style={{border: state.passStyleBorder}} placeholder="Password" ref={password} onChange={pass} aria-describedby="passwordHelpBlock" required />
+                        <div id='passwordHelpBlock' className={state.passStyleClassMsg}>
                             Use 8 or more characters with a combination of letters, numbers, and symbols.
                         </div>
                     </div>
                     <div className="col-md-6">
-                        <input type="password" className={rePassStyle.classes} style={{border: rePassStyle.border}} placeholder="Repeat password" ref={repeatPassword} onChange={repass} aria-describedby="rePasswordHelpBlock" required />
-                        <div id='rePasswordHelpBlock' className={rePassStyle.classMsg}>
+                        <input type="password" className={state.rePassStyleClasses} style={{border: state.rePassStyleBorder}} placeholder="Repeat password" ref={repeatPassword} onChange={repass} aria-describedby="rePasswordHelpBlock" required />
+                        <div id='rePasswordHelpBlock' className={state.rePassStyleClassMsg}>
                             Make sure you have entered the same password in the field above.
                         </div>
                     </div>

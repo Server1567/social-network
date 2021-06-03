@@ -1,27 +1,20 @@
 import React from 'react'
+import logo from './logo.svg'
+import styles from './Dashboard.module.css'
 
-const Dashboard = (props) => {
+const Dashboard = ({ user }) => {
     return (
-        <div className="card text-center" style={{margin: 'auto'}}>
-            <div className="card-header">
-                Developer Message
-            </div>
-            <div className="card-body" style={{padding: '50px 0'}}>
-                <h5 className="card-title">Welcome {props.user.firstName}</h5>
-                <p className="card-text" style={{padding: '0 300px'}}>
-                    This App is a test model to check the operation of a Social Network under a database of a simple JSON file. The test model has failed, but if you can figure out how to create a correct and more efficient test model you can apply for a fork in the GitHub repository of this project.
-                </p>
-                <a href="https://github.com/Server1567/social-network"
-                    className="btn btn-primary"
-                    style={{
-                        backgroundColor: '#24292e',
-                        borderColor: '#24292e'}}>
+        <div className={styles.App}>
+            <header className={styles.AppHeader}>
+                <img src={logo} className={styles.AppLogo} alt="logo" />
+                <h2>Welcome { user.firstName }</h2>
+                <h4>Social Network is in Development!</h4>
+                <a className={styles.AppLink}
+                    href="https://github.com/Server1567/social-network"
+                    target="_blank" rel="noopener noreferrer">
                     Fork on GitHub
                 </a>
-            </div>
-            <div className="card-footer text-muted">
-                A test by Server1567
-            </div>
+            </header>
         </div>
     )
 }

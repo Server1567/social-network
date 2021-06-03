@@ -1,2 +1,2 @@
-// Modulation of Login Component
+// Login Component Modulation
 export { default } from './Login'

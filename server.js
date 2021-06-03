@@ -25,21 +25,19 @@ app.post('/login', (req, res, next) => {
         const data = JSON.parse(fs.readFileSync('db.json', 'utf8'))
         if (data instanceof Array) {
             // If it's an Array, do something
-            data.map(dataOne => {
-                if (user.user === dataOne.userName && user.password === dataOne.password) {
-                    return res.status(200).json({ logged: true, user: dataOne })
-                } else {
-                    // IMPOSSIBLE TO SIMULATE DATA BSE
-                    return res.status(200).json({ logged: false }) /* Error in this line */
-                }
-            })
+             const log = data.filter(json => user.userName === json.userName && user.password === json.password)
+             if (log.length === 1) {
+                 return res.status(200).json({ logged: true, user: log[0] })
+             }
+
+             return res.status(200).json({ logged: false })
         } else {
             // If just has one user, do something
             if (user.user === data.userName && user.password === data.password) {
                 return res.status(200).json({ logged: true, user: data })
-            } else {
-                return res.status(200).json({ logged: false })
             }
+
+            return res.status(200).json({ logged: false })
         }
     } catch (e) {
         return res.status(404).json({message: 'Error 404 Not Found URL', error: e})

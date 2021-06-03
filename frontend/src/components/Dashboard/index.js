@@ -1,2 +1,2 @@
-// Dashboard Modulation
+// Dashboard Component Modulation
 export { default } from './Dashboard'

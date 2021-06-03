@@ -1,2 +1,2 @@
-// Modulation of Register component
+// Register Component Modulation
 export { default } from './Register'
